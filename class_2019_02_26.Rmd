@@ -1,0 +1,24 @@
+---
+title: "class_02_26_19"
+author: "Sabrina Chok"
+date: "February 26, 2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(readxl)
+library(janitor)
+
+```
+
+```{r}
+x_2019 <- read_excel("class_enrollment_summary_by_term_2.26.19.xlsx", skip = 3) %>%
+  clean_names() %>% 
+  filter(!is.na(course_name))
+x_2018 <- read_excel("class_enrollment_summary_by_term_03.06.18.xlsx", skip = 3) %>% 
+  clean_names() %>% 
+  filter(!is.na(course_name))
+```
+
