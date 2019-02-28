@@ -10,15 +10,46 @@ knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
 library(readxl)
 library(janitor)
+library(gt)
 
 ```
 
 ```{r}
+
+download.file(url = "https://registrar.fas.harvard.edu/files/fas-registrar/files/class_enrollment_summary_by_term_2.28.19.xlsx", 
+              destfile = "reg.2019.xsls",
+              mode = "ab")
+
+
+download.file(url = "https://registrar.fas.harvard.edu/files/fas-registrar/files/class_enrollment_summary_by_term_03.06.18.xlsx", 
+              destfile = "reg.2018.xsls",
+              mode = "ab")
+
 x_2019 <- read_excel("class_enrollment_summary_by_term_2.26.19.xlsx", skip = 3) %>%
   clean_names() %>% 
-  filter(!is.na(course_name))
+  filter(!is.na(course_name)) %>% 
+  select(course_id, course_title, course_name, u_grad)
+  
 x_2018 <- read_excel("class_enrollment_summary_by_term_03.06.18.xlsx", skip = 3) %>% 
   clean_names() %>% 
-  filter(!is.na(course_name))
+  filter(!is.na(course_name)) %>% 
+  select(course_id, course_title, course_name, u_grad)
+
+all <- inner_join(x_2019, x_2018, by= "course_id", suffix = c(".2019", ".2018")) %>% 
+  mutate(change = u_grad.2019 - u_grad.2018) %>% 
+  select(course_title.2019, course_name.2019, u_grad.2019, u_grad.2018, change) %>%
+  arrange(change) %>% 
+  slice(1:10) %>%
+  
+  gt %>%
+    tab_header(title = "Biggest Enrollment Decreases in Spring 2019") %>% 
+    cols_label(course_title.2019 = "Number",
+               u_grad.2019 = "2019",
+               u_grad.2018 = "2018",
+               change = "Change") %>% 
+  tab_source_note("Data from the Harvard Registrar") %>% 
+  as_raw_html() %>%  as.character() %>% cat()
+  
+
 ```
 
