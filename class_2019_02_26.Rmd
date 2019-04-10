@@ -39,8 +39,9 @@ all <- inner_join(x_2019, x_2018, by= "course_id", suffix = c(".2019", ".2018"))
   mutate(change = u_grad.2019 - u_grad.2018) %>% 
   select(course_title.2019, course_name.2019, u_grad.2019, u_grad.2018, change) %>%
   arrange(change) %>% 
-  slice(1:10) %>%
-  
+  slice(1:10)
+
+all %>% 
   gt %>%
     tab_header(title = "Biggest Enrollment Decreases in Spring 2019") %>% 
     cols_label(course_title.2019 = "Number",
